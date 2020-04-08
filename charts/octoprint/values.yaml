@@ -1,0 +1,96 @@
+# Default values for octoprint.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: nunofgs/octoprint
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: {}
+
+nameOverride: ""
+fullnameOverride: ""
+
+podSecurityContext: {}
+
+securityContext:
+  privileged: true
+
+basicauth:
+  enabled: false
+  # basic auth (htpasswd) value default (user=octo password=octo)
+  auth: 2N0bzokYXByMSRqSEk3TE00SSRpZTU3YWgyN1UvMXExcXFJOE9NSHMvCg==
+
+env:
+  CAMERA_DEV: /dev/video0
+  MJPEG_STREAMER_AUTOSTART: "true"
+  MJPEG_STREAMER_INPUT: "-y -n -r 800x600"
+
+livenessProbe:
+  initialDelaySeconds: 10
+  failureThreshold: 10
+  timeoutSeconds: 5
+  path: /
+  port: http
+readinessProbe:
+  initialDelaySeconds: 10
+  failureThreshold: 10
+  timeoutSeconds: 5
+  path: /
+  port: http
+
+videoservice:
+  type: ClusterIP
+  port: 8080
+
+service:
+  type: ClusterIP
+  port: 5000
+
+ingress:
+  enabled: false
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+videoIngress:
+  enabled: false
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources:
+  limits:
+    cpu: 2
+    memory: 3Gi
+  requests:
+    cpu: 1
+    memory: 1Gi
+
+persistence:
+  enabled: true
+  accessMode: ReadWriteOnce
+  size: 5Gi
+
+nodeSelector: {}
+  # your-worker-label: worker-label-value
+
+tolerations: []
+
+affinity: {}

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "octoprint.fullname" . }}-video
+  labels:
+    {{- include "octoprint.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.videoservice.port }}
+      targetPort: video
+      protocol: TCP
+      name: video
+  selector:
+{{- include "octoprint.selectorLabels" . | nindent 4 }}

@@ -1,0 +1,45 @@
+{{- if .Values.videoIngress.enabled -}}
+{{- $fullName := include "octoprint.fullname" . -}}
+{{- $svcPort := .Values.videoservice.port -}}
+{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-video
+  labels:
+    {{- include "octoprint.labels" . | nindent 4 }}
+  {{- with .Values.videoIngress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- if .Values.basicauth.enabled }}
+    ingress.kubernetes.io/auth-type: basic
+    ingress.kubernetes.io/auth-secret: {{ .Release.Name }}-basicauth
+  {{- end}}
+spec:
+{{- if .Values.videoIngress.tls }}
+  tls:
+  {{- range .Values.videoIngress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . | quote }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
+  rules:
+  {{- range .Values.videoIngress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+        {{- range .paths }}
+          - path: {{ . }}
+            backend:
+              serviceName: {{ $fullName }}-video
+              servicePort: {{ $svcPort }}
+        {{- end }}
+  {{- end }}
+{{- end }}
