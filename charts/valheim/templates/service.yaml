@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "valheim.fullname" . }}
+  labels:
+    {{- include "valheim.labels" . | nindent 4 }}
+spec:
+  type: NodePort
+  ports:
+    - name: port-1
+      nodePort: 32456
+      port: 32456
+      protocol: UDP
+      targetPort: 32456
+    - name: port-2
+      nodePort: 32457
+      port: 32457
+      protocol: UDP
+      targetPort: 32457
+  selector:
+    {{- include "valheim.selectorLabels" . | nindent 4 }}

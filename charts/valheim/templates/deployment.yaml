@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "valheim.fullname" . }}
+  labels:
+    {{- include "valheim.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "valheim.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "valheim.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "valheim.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          env:
+            {{- range $pkey, $pval := .Values.env }}
+            - name: {{ $pkey }}
+              value: {{ tpl ($pval) $ | quote }}
+            {{- end }}
+            - name: SERVER_NAME
+              value: "UPGH"
+            - name: WORLD_NAME
+              value: "World"
+            - name: SERVER_PASS
+              value: killerfisch
+            - name: SERVER_PORT
+              value: "32456"
+            - name: BACKUPS_INTERVAL
+              value: "3600"
+            - name: BACKUPS_DIRECTORY
+              value: "/config/backups"
+            - name: BACKUPS_MAX_AGE
+              value: "7"
+            - name: UPDATE_INTERVAL
+              value: "900"
+            - name: BACKUPS_DIRECTORY_PERMISSIONS
+              value: "755"
+            - name: CONFIG_DIRECTORY_PERMISSIONS
+              value: "755"
+            - name: WORLDS_DIRECTORY_PERMISSIONS
+              value: "755"
+            - name: WORLDS_FILE_PERMISSIONS
+              value: "644"
+            - name: BACKUPS_FILE_PERMISSIONS
+              value: "644"
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 32456
+              protocol: UDP
+            - containerPort: 32457
+              protocol: UDP
+          resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            {{- if .Values.persistence.enabled }}
+            - mountPath: /config
+              name: data
+            {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        {{- if .Values.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "valheim.fullname" . }}
+  {{- end }}

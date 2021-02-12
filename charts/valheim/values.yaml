@@ -1,0 +1,72 @@
+# Default values for valheim.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: lloesche/valheim-server
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: latest
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+env:
+  SERVER_NAME: "MyKubernetesValheim"
+  WORLD_NAME: "World"
+  SERVER_PASS: "secret"
+  SERVER_PORT: "32456"
+  BACKUPS_INTERVAL: "3600"
+  BACKUPS_DIRECTORY: "/config/backups"
+  BACKUPS_MAX_AGE: "7"
+  UPDATE_INTERVAL: "900"
+  BACKUPS_DIRECTORY_PERMISSIONS: "755"
+  CONFIG_DIRECTORY_PERMISSIONS: "755"
+  WORLDS_DIRECTORY_PERMISSIONS: "755"
+  WORLDS_FILE_PERMISSIONS: "644"
+  BACKUPS_FILE_PERMISSIONS: "644"
+
+persistence:
+  storageClassName: ""
+  enabled: true
+  accessMode: ReadWriteOnce
+  size: 50Gi
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources:
+  limits:
+   cpu: 2000m
+   memory: 3Gi
+  requests:
+   cpu: 2000m
+   memory: 3Gi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
