@@ -5,9 +5,12 @@ metadata:
   labels:
     {{- include "octoprint.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.videoservice.type }}
   ports:
     - port: {{ .Values.videoservice.port }}
+      {{- if .Values.videoservice.nodePort }}
+      nodePort: {{ .Values.videoservice.nodePort }}
+      {{- end}}
       targetPort: video
       protocol: TCP
       name: video

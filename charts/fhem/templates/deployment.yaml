@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fhem.fullname" . }}
+  labels:
+    {{- include "fhem.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "fhem.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "fhem.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "fhem.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          {{- if .Values.cpanPackages }}
+            - name: CPAN_PKG
+              value: {{ .Values.cpanPackages }}
+          {{- end }}
+          {{- if .Values.aptPackages }}
+            - name: APT_PKGS
+              value: {{ .Values.aptPackages }}
+          {{- end }}
+          {{- if .Values.pipPackages }}
+            - name: PIP_PKGS
+              value: {{ .Values.pipPackages }}
+          {{- end }}
+          {{- if .Values.npmPackages }}
+            - name: NPM_PKGS
+              value: {{ .Values.npmPackages }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 8083
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: {{ .Values.livenesProbe.initialDelaySeconds }}
+            failureThreshold: {{ .Values.livenesProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.livenesProbe.timeoutSeconds }}
+            httpGet:
+              path: {{ .Values.livenesProbe.path }}
+              port: {{ .Values.livenesProbe.port }}
+          readinessProbe:
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            httpGet:
+              path: {{ .Values.readinessProbe.path }}
+              port: {{ .Values.readinessProbe.port }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            {{- if .Values.persistence.enabled }}
+            - mountPath: /opt/fhem
+              name: data
+            {{- end }}
+            - name: init
+              mountPath: /docker/
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        {{- if .Values.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "fhem.fullname" . }}
+        {{- end }}
+        - name: init
+          configMap:
+            name: {{ include "fhem.fullname" . }}-init
+            defaultMode: 0750

@@ -26,7 +26,7 @@ basicauth:
 env:
   CAMERA_DEV: /dev/video0
   MJPEG_STREAMER_AUTOSTART: "true"
-  MJPEG_STREAMER_INPUT: "-y -n -r 800x600"
+  MJPEG_STREAMER_INPUT: "-y -n -r 1920x1080"
 
 livenessProbe:
   initialDelaySeconds: 10
@@ -55,12 +55,13 @@ ingress:
     kubernetes.io/ingress.class: traefik
     kubernetes.io/tls-acme: "true"
   hosts:
-    - host: chart-example.local
-      paths: []
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+    - host: myprinter.example.com
+      paths:
+        - /
+  tls:
+    - secretName: cluster-wildcard
+      hosts:
+        - myprinter.example.com
 
 videoIngress:
   enabled: false
@@ -68,12 +69,13 @@ videoIngress:
     kubernetes.io/ingress.class: traefik
     kubernetes.io/tls-acme: "true"
   hosts:
-    - host: chart-example.local
-      paths: []
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+    - host: myprinter.example.com
+      paths:
+        - /
+  tls:
+    - secretName: cluster-wildcard
+      hosts:
+        - myprinter.example.com
 
 resources:
   limits:
@@ -88,9 +90,11 @@ persistence:
   accessMode: ReadWriteOnce
   size: 5Gi
 
-nodeSelector: {}
-  # your-worker-label: worker-label-value
+nodeSelector:
+  iot-worker-id: "prusa"
 
-tolerations: []
+tolerations:
+  - key: dedicated
+    value: longhorn
 
 affinity: {}

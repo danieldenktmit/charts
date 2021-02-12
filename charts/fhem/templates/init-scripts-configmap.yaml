@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "fhem.fullname" . }}-init
+  labels:
+    {{- include "fhem.labels" . | nindent 4 }}
+data:
+  pre-init.sh: |-
+  {{- .Files.Get "files/pre-init.sh" | nindent 4 }}
+  post-init.sh: |-
+  {{- .Files.Get "files/post-init.sh" | nindent 4 }}
+  pre-start.sh: |-
+  {{- .Files.Get "files/pre-start.sh" | nindent 4 }}
+  post-start.sh: |-
+  {{- .Files.Get "files/post-start.sh" | nindent 4 }}

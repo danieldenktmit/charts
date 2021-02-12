@@ -38,7 +38,10 @@ Do not expose your octoprint instance if you are not sure what you are doing!
 
 There are two ways to secure your octoprint instance.
 1. Enable Octoprint User Management on first start
-2. Enable Basicauth during deployment (see: Variables)
+2. Enable Basicauth during deployment (see: Variables). Secret can be generated with the following command:
+```
+htpasswd -nb <username> <password> | base64`
+```
 
 In case you want to make your instance accesable from the internet I recommand using both. You will also need Ingress to be installed. 
 The default settings for ingress in this chart are tested with traefik.
