@@ -1,0 +1,36 @@
+apiVersion: v1
+entries:
+  fhem:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2021-02-12T11:18:36.391967+01:00"
+    description: A Helm chart for Kubernetes
+    digest: 3a0ed253c99c3d1e7d2b0f7ff1795a829cd1fb50c390c01116d73f45a5fcc8b4
+    name: fhem
+    type: application
+    urls:
+    - https://danieldenktmit.github.io/charts/fhem-0.1.0.tgz
+    version: 0.1.0
+  octoprint:
+  - apiVersion: v2
+    appVersion: 1.3.12
+    created: "2021-02-12T11:18:36.392661+01:00"
+    description: A Helm chart for Kubernetes
+    digest: efe8a78ded200a4624dc5d91a321b2b3d3a50c1d1f436aa4200b681f3e908af2
+    name: octoprint
+    type: application
+    urls:
+    - https://danieldenktmit.github.io/charts/octoprint-0.1.0.tgz
+    version: 0.1.0
+  valheim:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2021-02-12T11:18:36.393129+01:00"
+    description: A Helm chart for Valheim Server
+    digest: 447e7a1fad54e5ab7ef315f357c407786e5ae41e5cb37e37f12953a85f81929c
+    name: valheim
+    type: application
+    urls:
+    - https://danieldenktmit.github.io/charts/valheim-0.1.0.tgz
+    version: 0.1.0
+generated: "2021-02-12T11:18:36.390363+01:00"
