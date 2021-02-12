@@ -6,7 +6,7 @@ This repo contains helm charts that might be usefull for everyone.
 
 Add Repository:
 ```
-helm repo add denktmit https://danieldenktmit.github.io/charts/
+helm repo add danieldenktmit https://danieldenktmit.github.io/charts/
 ```
 
 Install a Chart:
